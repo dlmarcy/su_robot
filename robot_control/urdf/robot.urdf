@@ -1,0 +1,758 @@
+<?xml version="1.0"?>
+
+<robot name="robot">
+
+<!--   Colors   -->
+
+    <material name="black">
+        <color rgba="0 0 0 1"/>
+    </material>
+
+    <material name="brown">
+        <color rgba="0.3 0.2 0 0.8"/>
+    </material>
+
+    <material name="white">
+        <color rgba="1 1 1 1"/>
+    </material>
+
+    <material name="silver">
+        <color rgba="0.75 0.75 0.75 1"/>
+    </material>
+
+    <material name="yellow">
+        <color rgba="0.95 1 0 1"/>
+    </material>
+
+    <material name="green">
+        <color rgba="0 1 0 1"/>
+    </material>
+
+    <material name="dark_green">
+        <color rgba="0.14 0.3 0.14 1"/>
+    </material>
+
+    <material name="red">
+        <color rgba="0.67 0.12 0.02 1"/>
+    </material>
+
+<!--   Links  -->
+
+<!--   Base   -->
+
+    <link name="base_footprint">
+        <visual>
+            <geometry>
+                <box size="0.050 0.100 0"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+        </visual>
+    </link>
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <box size="0.300 0.200 0.012"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="black"/>
+        </visual>
+    </link>
+    
+<!--   Wheels   -->
+
+    <link name="wheel_left_motor">
+        <visual>
+            <geometry>
+                <cylinder length="0.068" radius="0.013"/>
+            </geometry>
+            <origin rpy="1.57079 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>
+    </link>
+
+    <link name="wheel_left_shaft">
+        <visual>
+            <geometry>
+                <cylinder length="0.012" radius="0.002"/>
+            </geometry>
+            <origin rpy="1.57079 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>    
+    </link>
+
+    <link name="wheel_left">
+        <visual>
+            <geometry>
+                <cylinder length="0.010" radius="0.040"/>
+            </geometry>
+            <origin rpy="1.57079 0 0" xyz="0 0 0"/>
+            <material name="black"/>
+        </visual>    
+    </link>
+
+    <link name="wheel_left_marker">
+        <visual>
+            <geometry>
+                <box size="0.002 0.001 0.040"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="yellow"/>
+        </visual>    
+    </link>
+
+    <link name="wheel_right_motor">
+        <visual>
+            <geometry>
+                <cylinder length="0.068" radius="0.013"/>
+            </geometry>
+            <origin rpy="1.57079 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>    
+    </link>
+
+    <link name="wheel_right_shaft">
+        <visual>
+            <geometry>
+                <cylinder length="0.012" radius="0.002"/>
+            </geometry>
+            <origin rpy="1.57079 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>    
+    </link>
+
+    <link name="wheel_right">
+        <visual>
+            <geometry>
+                <cylinder length="0.010" radius="0.040"/>
+            </geometry>
+            <origin rpy="1.57079 0 0" xyz="0 0 0"/>
+            <material name="black"/>
+        </visual>    
+    </link>
+
+    <link name="wheel_right_marker">
+        <visual>
+            <geometry>
+                <box size="0.002 0.001 0.040"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="yellow"/>
+        </visual>    
+    </link>
+
+<!--   Caster   -->
+
+    <link name="caster_wheel">
+        <visual>
+            <geometry>
+                <cylinder length="0.016" radius="0.019"/>
+            </geometry>
+            <origin rpy="1.57079 0 0" xyz="0 0 0"/>
+            <material name="black"/>
+        </visual>
+    </link>
+    
+<!--   Arm   -->
+
+    <link name="arm_base">
+        <visual>
+            <geometry>
+                <box size="0.1 0.1 0.006"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="dark_green"/>
+        </visual>
+    </link>
+
+    <link name="arm_shoulder">
+        <visual>
+            <geometry>
+                <box size="0.04 0.006 0.09"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="dark_green"/>
+        </visual>
+    </link>
+
+    <link name="arm_shoulder_motor">
+        <visual>
+            <geometry>
+                <cylinder length="0.020" radius="0.014"/>
+            </geometry>
+            <origin rpy="1.57 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>
+    </link>
+
+    <link name="arm_shoulder_shaft">
+        <visual>
+            <geometry>
+                <cylinder length="0.010" radius="0.003"/>
+            </geometry>
+            <origin rpy="1.57 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>
+    </link>
+
+    <link name="arm_elbow">
+        <visual>
+            <geometry>
+                <box size="0.018 0.006 0.11"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="dark_green"/>
+        </visual>
+    </link>
+
+    <link name="arm_elbow_motor">
+        <visual>
+            <geometry>
+                <cylinder length="0.020" radius="0.014"/>
+            </geometry>
+            <origin rpy="1.57 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>
+    </link>
+
+    <link name="arm_elbow_shaft">
+        <visual>
+            <geometry>
+                <cylinder length="0.010" radius="0.003"/>
+            </geometry>
+            <origin rpy="1.57 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>
+    </link>
+
+    <link name="arm_forearm">
+        <visual>
+            <geometry>
+                <box size="0.018 0.006 0.120"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="dark_green"/>
+        </visual>
+    </link>
+
+    <link name="arm_hand">
+        <visual>
+            <geometry>
+                <box size="0.009 0.006 0.040"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="dark_green"/>
+        </visual>
+    </link>
+
+    <link name="range_sensor">
+        <visual>
+            <geometry>
+                <box size="0.002 0.018 0.012"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="dark_green"/>
+        </visual>
+    </link>
+
+<!--   Electronics   -->
+
+    <link name="elec_base">
+        <visual>
+            <geometry>
+                <box size="0.1 0.1 0.006"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="dark_green"/>
+        </visual>
+    </link>
+
+    <link name="elec_pi">
+        <visual>
+            <geometry>
+                <box size="0.055 0.080 0.002"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="red"/>
+        </visual>
+    </link>
+
+    <link name="elec_driver">
+        <visual>
+            <geometry>
+                <box size="0.055 0.080 0.002"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="green"/>
+        </visual>
+    </link>
+
+    <link name="elec_post1">
+        <visual>
+            <geometry>
+                <cylinder length="0.050" radius="0.003"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>
+    </link>
+
+    <link name="elec_post2">
+        <visual>
+            <geometry>
+                <cylinder length="0.050" radius="0.003"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>
+    </link>
+
+    <link name="elec_post3">
+        <visual>
+            <geometry>
+                <cylinder length="0.050" radius="0.003"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>
+    </link>
+
+    <link name="elec_post4">
+        <visual>
+            <geometry>
+                <cylinder length="0.050" radius="0.003"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="silver"/>
+        </visual>
+    </link>
+
+    <link name="imu_sensor">
+        <visual>
+            <geometry>
+                <box size="0.025 0.020 0.002"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="brown"/>
+        </visual>
+    </link>
+
+<!--   Battery   -->
+
+    <link name="bat_base">
+        <visual>
+            <geometry>
+                <box size="0.1 0.1 0.006"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="dark_green"/>
+        </visual>
+    </link>
+
+    <link name="bat_battery">
+        <visual>
+            <geometry>
+                <box size="0.090 0.068 0.100"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="black"/>
+        </visual>
+    </link>
+
+<!--   Camera   -->
+
+    <link name="cam_base">
+        <visual>
+            <geometry>
+                <box size="0.050 0.100 0.006"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="green"/>
+        </visual>
+    </link>
+
+    <link name="cam_post1">
+        <visual>
+            <geometry>
+                <box size="0.024 0.006 0.146"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="green"/>
+        </visual>
+    </link>
+
+    <link name="cam_post2">
+        <visual>
+            <geometry>
+                <box size="0.006 0.018 0.146"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="green"/>
+        </visual>
+    </link>
+
+    <link name="cam_plate">
+        <visual>
+            <geometry>
+                <box size="0.050 0.100 0.006"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="green"/>
+        </visual>
+    </link>
+
+    <link name="cam_camera">
+        <visual>
+            <geometry>
+                <box size="0.026 0.100 0.022"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="black"/>
+        </visual>
+    </link>
+
+<!--   Monitor   -->
+
+    <link name="mon_base_post">
+        <visual>
+            <geometry>
+                <cylinder length="0.080" radius="0.012"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="black"/>
+        </visual>
+    </link>
+
+    <link name="mon_ball">
+        <visual>
+            <geometry>
+                <sphere radius="0.012"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="black"/>
+        </visual>
+    </link>
+
+    <link name="mon_mon_post">
+        <visual>
+            <geometry>
+                <cylinder length="0.050" radius="0.005"/>
+            </geometry>
+            <origin rpy="0 -0.785 0" xyz="0 0 0"/>
+            <material name="black"/>
+        </visual>
+    </link>
+
+    <link name="mon_monitor">
+        <visual>
+            <geometry>
+                <box size="0.165 0.245 0.010"/>
+            </geometry>
+            <origin rpy="0 -0.785 0" xyz="0 0 0"/>
+            <material name="black"/>
+        </visual>
+    </link>
+
+<!--   Joints   -->
+
+<!--   Base     -->
+
+    <joint name="base_footprint_link" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.076 0 0.071"/>
+        <parent link="base_footprint"/>
+        <child link="base_link"/>
+    </joint>
+
+<!--   Wheels   -->
+
+    <joint name="base_left_motor" type="fixed">
+        <origin rpy="0 0 3.14159" xyz="0.076 0.0745 -0.031"/>
+        <parent link="base_link"/>
+        <child link="wheel_left_motor"/>
+    </joint>
+    
+    <joint name="motor_left_shaft" type="continuous">
+        <origin rpy="0 0 0" xyz="0 -0.040 0"/>
+        <axis xyz="0 -1 0"/>
+        <parent link="wheel_left_motor"/>
+        <child link="wheel_left_shaft"/>
+    </joint>
+    
+    <joint name="shaft_left_wheel" type="fixed">
+        <origin rpy="0 0 0" xyz="0 -0.011 0"/>
+        <parent link="wheel_left_shaft"/>
+        <child link="wheel_left"/>
+    </joint>
+    
+    <joint name="wheel_left_marker" type="fixed">
+        <origin rpy="0 0 0" xyz="0 -0.0055 0.020"/>
+        <parent link="wheel_left"/>
+        <child link="wheel_left_marker"/>
+    </joint>
+
+    <joint name="base_right_motor" type="fixed">
+        <origin rpy="0 0 0" xyz="0.076 -0.0745 -0.031"/>
+        <parent link="base_link"/>
+        <child link="wheel_right_motor"/>
+    </joint>
+    
+    <joint name="motor_right_shaft" type="continuous">
+        <origin rpy="0 0 0" xyz="0 -0.040 0"/>
+        <axis xyz="0 1 0"/>
+        <parent link="wheel_right_motor"/>
+        <child link="wheel_right_shaft"/>
+    </joint>
+   
+    <joint name="shaft_right_wheel" type="fixed">
+        <origin rpy="0 0 0" xyz="0 -0.011 0"/>
+        <parent link="wheel_right_shaft"/>
+        <child link="wheel_right"/>
+    </joint>
+   
+    <joint name="wheel_right_marker" type="fixed">
+        <origin rpy="0 0 0" xyz="0 -0.0055 0.020"/>
+        <parent link="wheel_right"/>
+        <child link="wheel_right_marker"/>
+    </joint>
+
+<!--   Caster   -->
+
+    <joint name="base_caster_wheel" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.110 0 -0.052"/>
+        <parent link="base_link"/>
+        <child link="caster_wheel"/>
+    </joint>
+
+<!--   Arm   -->
+
+    <joint name="base_arm_base" type="fixed">
+        <origin rpy="0 0 0" xyz="0.100 0 0.009"/>
+        <parent link="base_link"/>
+        <child link="arm_base"/>
+    </joint>
+
+    <joint name="base_shoulder" type="fixed">
+        <origin rpy="0 0 0" xyz="0.020 -0.010 0.048"/>
+        <parent link="arm_base"/>
+        <child link="arm_shoulder"/>
+    </joint>
+
+    <joint name="shoulder_motor" type="fixed">
+        <origin rpy="0 0 0" xyz="0 0.013 0.020"/>
+        <parent link="arm_shoulder"/>
+        <child link="arm_shoulder_motor"/>
+    </joint>
+    
+    <joint name="motor_shoulder_shaft" type="continuous">
+        <origin rpy="0 0 0" xyz="0 -0.015 0.008"/>
+        <axis xyz="0 -1 0"/>
+        <parent link="arm_shoulder_motor"/>
+        <child link="arm_shoulder_shaft"/>
+    </joint>
+    
+    <joint name="shaft_elbow" type="fixed">
+        <origin rpy="0 0 0" xyz="0 -0.008 0.045"/>
+        <parent link="arm_shoulder_shaft"/>
+        <child link="arm_elbow"/>
+    </joint>
+    
+    <joint name="elbow_motor" type="fixed">
+        <origin rpy="0 0 0" xyz="0 0.013 0.037"/>
+        <parent link="arm_elbow"/>
+        <child link="arm_elbow_motor"/>
+    </joint>
+    
+    <joint name="motor_elbow_shaft" type="continuous">
+        <origin rpy="0 0 0" xyz="0 -0.015 0.008"/>
+        <axis xyz="0 -1 0"/>
+        <parent link="arm_elbow_motor"/>
+        <child link="arm_elbow_shaft"/>
+    </joint>
+    
+    <joint name="shaft_forearm" type="fixed">
+        <origin rpy="0 0 0" xyz="0 -0.008 -0.050"/>
+        <parent link="arm_elbow_shaft"/>
+        <child link="arm_forearm"/>
+    </joint>
+    
+    <joint name="forearm_hand" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.009 0 -0.080"/>
+        <parent link="arm_forearm"/>
+        <child link="arm_hand"/>
+    </joint>
+    
+    <joint name="base_range_sensor" type="fixed">
+        <origin rpy="0 0 0" xyz="0.061 0 0.038"/>
+        <parent link="arm_base"/>
+        <child link="range_sensor"/>
+    </joint>
+    
+<!--   Electronics   -->
+
+    <joint name="base_elec_base" type="fixed">
+        <origin rpy="0 0 0" xyz="0 -0.050  0.009"/>
+        <parent link="base_link"/>
+        <child link="elec_base"/>
+    </joint>
+
+    <joint name="base_pi" type="fixed">
+        <origin rpy="0 0 0" xyz="0 0 0.031"/>
+        <parent link="elec_base"/>
+        <child link="elec_pi"/>
+    </joint>
+
+    <joint name="base_driver" type="fixed">
+        <origin rpy="0 0 0" xyz="0 0 0.054"/>
+        <parent link="elec_base"/>
+        <child link="elec_driver"/>
+    </joint>
+
+    <joint name="base_post1" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.024 -0.020 0.028"/>
+        <parent link="elec_base"/>
+        <child link="elec_post1"/>
+    </joint>
+
+    <joint name="base_post2" type="fixed">
+        <origin rpy="0 0 0" xyz="0.024 -0.020 0.028"/>
+        <parent link="elec_base"/>
+        <child link="elec_post2"/>
+    </joint>
+
+    <joint name="base_post3" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.024 0.037 0.028"/>
+        <parent link="elec_base"/>
+        <child link="elec_post3"/>
+    </joint>
+
+    <joint name="base_post4" type="fixed">
+        <origin rpy="0 0 0" xyz="0.024 0.037 0.028"/>
+        <parent link="elec_base"/>
+        <child link="elec_post4"/>
+    </joint>
+
+    <joint name="driver_imu" type="fixed">
+        <origin rpy="0 0 3.14159265" xyz="0.014 0.016 0.015"/>
+        <parent link="elec_driver"/>
+        <child link="imu_sensor"/>
+    </joint>
+
+<!--   Battery   -->
+
+    <joint name="base_bat_base" type="fixed">
+        <origin rpy="0 0 0" xyz="0 0.050 0.009"/>
+        <parent link="base_link"/>
+        <child link="bat_base"/>
+    </joint>
+
+    <joint name="base_battery" type="fixed">
+        <origin rpy="0 0 0" xyz="0 0 0.050"/>
+        <parent link="bat_base"/>
+        <child link="bat_battery"/>
+    </joint>
+
+<!--   Camera   -->
+
+    <joint name="base_cam_base" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.075 0 0.009"/>
+        <parent link="base_link"/>
+        <child link="cam_base"/>
+    </joint>
+
+    <joint name="cam_base_post1" type="fixed">
+        <origin rpy="0 0 0" xyz="0 -0.009 0.076"/>
+        <parent link="cam_base"/>
+        <child link="cam_post1"/>
+    </joint>
+
+    <joint name="cam_base_post2" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.009 0.003 0.076"/>
+        <parent link="cam_base"/>
+        <child link="cam_post2"/>
+    </joint>
+
+    <joint name="base_cam_plate" type="fixed">
+        <origin rpy="0 0 0" xyz="0 0 0.152"/>
+        <parent link="cam_base"/>
+        <child link="cam_plate"/>
+    </joint>
+
+    <joint name="cam_plate_cam" type="fixed">
+        <origin rpy="0 0.25 0" xyz="0 0 0.065"/>
+        <parent link="cam_plate"/>
+        <child link="cam_camera"/>
+    </joint>
+
+<!--   Monitor   -->
+
+    <joint name="base_base_post" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.130 0 0.046"/>
+        <parent link="base_link"/>
+        <child link="mon_base_post"/>
+    </joint>
+
+    <joint name="base_post_ball" type="fixed">
+        <origin rpy="0 0 0" xyz="0 0 0.040"/>
+        <parent link="mon_base_post"/>
+        <child link="mon_ball"/>
+    </joint>
+
+    <joint name="ball_mon_post" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.017 0 0.017"/>
+        <parent link="mon_ball"/>
+        <child link="mon_mon_post"/>
+    </joint>
+
+    <joint name="mon_post_monitor" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.017 0 0.017"/>
+        <parent link="mon_mon_post"/>
+        <child link="mon_monitor"/>
+    </joint>
+
+<!--   ROS2 Control tags   -->
+
+    <ros2_control name="teensy_control" type="system">
+
+        <hardware>
+            <plugin>topic_based_ros2_control/TopicBasedSystem</plugin>
+            <param name="joint_commands_topic">/teensy/commands</param>
+            <param name="joint_states_topic">/teensy/motors</param>
+            <param name="trigger_joint_command_threshold">-1.0</param>
+        </hardware>
+
+        <joint name="motor_left_shaft">
+            <command_interface name="velocity"/>
+            <state_interface name="position">
+                <param name="initial_value">0.0</param>
+            </state_interface>
+            <state_interface name="velocity"/>
+        </joint>
+
+        <joint name="motor_right_shaft">
+            <command_interface name="velocity"/>
+            <state_interface name="position">
+                <param name="initial_value">0.0</param>
+            </state_interface>
+            <state_interface name="velocity"/>
+        </joint>
+
+        <joint name="motor_shoulder_shaft">
+            <command_interface name="velocity"/>
+            <state_interface name="position">
+                <param name="initial_value">0.0</param>
+            </state_interface>
+            <state_interface name="velocity"/>
+        </joint>
+
+        <joint name="motor_elbow_shaft">
+            <command_interface name="velocity"/>
+            <state_interface name="position">
+                <param name="initial_value">0.0</param>
+            </state_interface>
+            <state_interface name="velocity"/>
+        </joint>
+
+    </ros2_control>
+
+</robot>
+
