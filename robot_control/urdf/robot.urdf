@@ -715,8 +715,8 @@
 
         <hardware>
             <plugin>topic_based_ros2_control/TopicBasedSystem</plugin>
-            <param name="joint_commands_topic">/teensy/commands</param>
-            <param name="joint_states_topic">/teensy/motors</param>
+            <param name="joint_commands_topic">/arduino/commands</param>
+            <param name="joint_states_topic">/arduino/joint_states</param>
             <param name="trigger_joint_command_threshold">-1.0</param>
         </hardware>
 
