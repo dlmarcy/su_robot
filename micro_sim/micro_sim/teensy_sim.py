@@ -13,10 +13,10 @@ class Teensy_Sim(Node):
 		super().__init__('teensy_sim')
 		
 		# create publishers and message variables
-		self.pub_motors = self.create_publisher(JointState, 'teensy/motors', 10)
-		self.pub_imu = self.create_publisher(Imu, 'teensy/imu', 10)
-		self.pub_range = self.create_publisher(Range, 'teensy/range', 10)
-		self.pub_battery = self.create_publisher(BatteryState, 'teensy/battery', 10)
+		self.pub_motors = self.create_publisher(JointState, 'arduino/joint_states', 10)
+		self.pub_imu = self.create_publisher(Imu, 'arduino/imu', 10)
+		self.pub_range = self.create_publisher(Range, 'arduino/range', 10)
+		self.pub_battery = self.create_publisher(BatteryState, 'arduino/battery', 10)
 		self.motor_msg = JointState()
 		self.motor_msg.name = ['motor_left_shaft', 'motor_right_shaft', 'motor_shoulder_shaft', 'motor_elbow_shaft']
 		self.motor_msg.position = [0.0, 0.0, 0.0, 0.0]
@@ -26,7 +26,7 @@ class Teensy_Sim(Node):
 		self.battery_msg = BatteryState()
 		
 		# create subscribers and message variables
-		self.sub_commands = self.create_subscription(JointState, 'teensy/commands', self.cmd_callback, 10)
+		self.sub_commands = self.create_subscription(JointState, 'arduino/commands', self.cmd_callback, 10)
 		self.sub_commands  # prevent unused variable warning
 		self.command_msg = JointState()
 		
