@@ -29,11 +29,11 @@ void MicroROSArduino::errorLoop()
 
 void MicroROSArduino::spin()
 {
-  if (battery) {rclc_executor_spin_some(&battery_executor, RCL_MS_TO_NS(20));}
-  if (range) {rclc_executor_spin_some(&range_executor, RCL_MS_TO_NS(20));}
-  if (imu) {rclc_executor_spin_some(&imu_executor, RCL_MS_TO_NS(20));}
-  if (joint_state) {rclc_executor_spin_some(&joint_state_executor, RCL_MS_TO_NS(20));}
-  if (command) {rclc_executor_spin_some(&command_executor, RCL_MS_TO_NS(20));}
+  if (battery) {rclc_executor_spin_some(&battery_executor, RCL_MS_TO_NS(1));}
+  if (range) {rclc_executor_spin_some(&range_executor, RCL_MS_TO_NS(1));}
+  if (imu) {rclc_executor_spin_some(&imu_executor, RCL_MS_TO_NS(1));}
+  if (joint_state) {rclc_executor_spin_some(&joint_state_executor, RCL_MS_TO_NS(1));}
+  if (command) {rclc_executor_spin_some(&command_executor, RCL_MS_TO_NS(1));}
 }
 
 void MicroROSArduino::beginBatteryBroadcaster(void (*battery_function)(rcl_timer_t*, int64_t))
@@ -85,7 +85,7 @@ void MicroROSArduino::beginRangeBroadcaster(void (*range_function)(rcl_timer_t*,
   if (rclc_timer_init_default(
     &range_timer,
     &support,
-    RCL_MS_TO_NS(1000),
+    RCL_MS_TO_NS(200),
     range_function) != RCL_RET_OK) {
     errorLoop();
   }
@@ -120,7 +120,7 @@ void MicroROSArduino::beginImuBroadcaster(void (*imu_function)(rcl_timer_t*, int
   if (rclc_timer_init_default(
     &imu_timer,
     &support,
-    RCL_MS_TO_NS(1000),
+    RCL_MS_TO_NS(50),
     imu_function) != RCL_RET_OK) {
     errorLoop();
   }
@@ -155,7 +155,7 @@ void MicroROSArduino::beginJointStateBroadcaster(void (*joint_state_function)(rc
   if (rclc_timer_init_default(
     &joint_state_timer,
     &support,
-    RCL_MS_TO_NS(1000),
+    RCL_MS_TO_NS(100),
     joint_state_function) != RCL_RET_OK) {
     errorLoop();
   }
