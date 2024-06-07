@@ -20,7 +20,9 @@ def generate_launch_description():
 			package="controller_manager",
 			executable="ros2_control_node",
 			output={'stdout': 'screen', 'stderr': 'screen'},
-			parameters=[{'robot_description': urdf_file}, control_params]
+			#parameters=[{'robot_description': urdf_file}, control_params]
+			parameters=[control_params],
+			remappings=[('/controller_manager/robot_description', '/robot_description')]
 		),
 		Node(
 			package="controller_manager",
