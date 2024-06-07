@@ -9,8 +9,8 @@ int Mot_L_EN = 4;
 int Mot_L_PH = 5;
 int Mot_R_EN = 3;
 int Mot_R_PH = 2;
-int Encode_L1 = 17;
-int Encode_L2 = 16;
+int Encode_L1 = 12;
+int Encode_L2 = 6;
 int Encode_R1 = 0;
 int Encode_R2 = 1;
 
