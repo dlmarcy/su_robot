@@ -8,8 +8,8 @@ int Mot_L_EN = 4;
 int Mot_L_PH = 5;
 int Mot_R_EN = 3;
 int Mot_R_PH = 2;
-int Encode_L1 = 17;
-int Encode_L2 = 16;
+int Encode_L1 = 12;
+int Encode_L2 = 6;
 int Encode_R1 = 0;
 int Encode_R2 = 1;
 
@@ -97,10 +97,10 @@ void commander_cb(const void * msgin)
 void set_PWM(int motor, int value) {
   if (motor == left) {
     if (value < 0) {
-      digitalWrite(Mot_L_PH, LOW);  // left backward
+      digitalWrite(Mot_L_PH, HIGH);  // left backward
       analogWrite(Mot_L_EN, -value);
     } else {
-      digitalWrite(Mot_L_PH, HIGH);  // left forward
+      digitalWrite(Mot_L_PH, LOW);  // left forward
       analogWrite(Mot_L_EN, value);
     }
   } else {
