@@ -1,7 +1,12 @@
 #include "MicroROSArduino.h"
+#include <VL53L0X.h>
+#include <Adafruit_INA219.h>
+#include <Adafruit_BNO055.h>
+#include <EEPROM.h>
 #include <PID_v2.h>
 #define ENCODER_OPTIMIZE_INTERRUPTS
 #include <Encoder.h>
+#include <AccelStepper.h>
 
 // define pin numbers
 int Mot_L_EN = 4;
