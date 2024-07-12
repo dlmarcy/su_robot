@@ -141,7 +141,7 @@ void joint_state_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
   micro_ros.joint_state_msg.velocity.data[0] = input_l;
   micro_ros.joint_state_msg.position.data[1] = scale_radians_pos*encoder_r;
   micro_ros.joint_state_msg.velocity.data[1] = input_r;
-  micro_ros.publishJointState(joint_states_id);
+  micro_ros.publishJointStateBroad(joint_states_id);
 }
 
 void commander_cb(const void * msgin)
@@ -149,8 +149,8 @@ void commander_cb(const void * msgin)
   const sensor_msgs__msg__JointState * cmd_msg = (const sensor_msgs__msg__JointState *)msgin;
   control_left.Setpoint(cmd_msg->velocity.data[0]);
   control_right.Setpoint(cmd_msg->velocity.data[1]);
-  shoulder_setpoint = cmd_msg->velocity.data[2];
-  elbow_setpoint = cmd_msg->velocity.data[3];
+  control_shoulder.setSpeed(scale_steps_arm*cmd_msg->velocity.data[2]);
+  control_elbow.setSpeed(scale_steps_arm*cmd_msg->velocity.data[3]);
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));  
 }
 
