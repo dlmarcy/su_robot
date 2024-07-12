@@ -44,6 +44,7 @@ const int RIGHT = 2;
 MicroROSArduino micro_ros;
 
 // define the encoder variables and objects
+uint8_t joint_state_id;
 long encoder_l = 0;
 long encoder_r = 0;
 long previous_l = 0;
@@ -77,14 +78,37 @@ const float scale_radians_vel = 1.0/scale_counts_vel;
 const float scale_steps_arm = 1019.0/3.14159; // steps per radian
 const float scale_radians_arm = 1.0/scale_steps_arm; // radians per step
 
+// define battery variables and objects
+uint8_t battery_id;
+Adafruit_INA219 power_monitor;
+
+// define range variables and objects
+uint8_t range_id;
+VL53L0X range_sensor;
+
+// define imu variables and objects
+uint8_t imu_id;
+int eeAddress = 0;
+long bnoID;
+adafruit_bno055_offsets_t calibrationData;
+sensor_t sensor;
+uint8_t system_cal, gyro_cal, accel_cal, mag_cal = 0;
+imu::Quaternion quat;
+imu::Vector<3> gyro;
+imu::Vector<3> accel;
+imu::Vector<3> magnet;
+Adafruit_BNO055 imu_sensor = Adafruit_BNO055(55);  
+
 void battery_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
-  micro_ros.battery_msg.voltage = 10;
-  micro_ros.publishBattery();
+  micro_ros.battery_msg[battery_id].voltage = power_monitor.getBusVoltage_V() + (power_monitor.getShuntVoltage_mV()/1000.0);
+  micro_ros.battery_msg[battery_id].current = power_monitor.getCurrent_mA()/-1000.0;
+  micro_ros.publishBattery(battery_id);
 }
 
 void range_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
-  micro_ros.range_msg.range = 0.5;
-  micro_ros.publishRange();
+  micro_ros.range_msg.range = range_sensor.readRangeContinuousMillimeters()*0.001;
+  if (micro_ros.range_msg.range > 1.0) { range_msg.range = 1.0; }
+  micro_ros.publishRange(range_id);
 }
 
 void imu_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
@@ -104,7 +128,7 @@ void joint_state_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
   micro_ros.joint_state_msg.velocity.data[0] = input_l;
   micro_ros.joint_state_msg.position.data[1] = scale_radians_pos*encoder_r;
   micro_ros.joint_state_msg.velocity.data[1] = input_r;
-  micro_ros.publishJointState();
+  micro_ros.publishJointState(joint_state_id);
 }
 
 void commander_cb(const void * msgin)
