@@ -235,14 +235,16 @@ void setup() {
 
   // set up encoders and broadcaster
   String JointNames[4];
-  JointNames[0] = "gear_left_shaft";
-  JointNames[1] = "gear_right_shaft";
-  joint_states_id = micro_ros.beginBroadcaster(MicroROSArduino::eeJointState, "joint_states", 10.0, &joint_state_timer_cb, 4, JointNames);
-  micro_ros.beginJointStateCommander(&commander_cb, "commands", 2, JointNames);
+  JointNames[0] = "motor_left_shaft";
+  JointNames[1] = "motor_right_shaft";
+  JointNames[2] = "motor_shoulder_shaft";
+  JointNames[3] = "motor_elbow_shaft";
+  joint_states_id = micro_ros.beginBroadcaster(MicroROSArduino::JOINTSTATEBROAD, "joint_states", 10.0, &joint_state_timer_cb, 4, JointNames);
   encoder_left.write(0);
   encoder_right.write(0);
   
   // set up PID controller, motors, and commander
+  micro_ros.beginJointStateCommander(&commander_cb, "commands", 4, JointNames);
   analogWrite(Mot_L_EN, 0); // left speed pin
   pinMode(Mot_L_PH, OUTPUT);  // left direction pin
   digitalWrite(Mot_L_PH, HIGH);  // left forward
@@ -274,4 +276,8 @@ void loop() {
   set_PWM(LEFT, output_l);
   output_r = control_right.Run(input_r);
   set_PWM(RIGHT, output_r);
+
+  // keep stepper motor arms running
+  control_shoulder.runSpeed();
+  control_elbow.runSpeed();
 }
