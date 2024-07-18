@@ -170,10 +170,10 @@ void commander_cb(const void * msgin)
 void set_PWM(int motor, int value) {
   if (motor == LEFT) {
     if (value < 0) {
-      digitalWrite(Mot_L_PH, HIGH);  // left backward
+      digitalWrite(Mot_L_PH, LOW);  // left backward
       analogWrite(Mot_L_EN, -value);
     } else {
-      digitalWrite(Mot_L_PH, LOW);  // left forward
+      digitalWrite(Mot_L_PH, HIGH);  // left forward
       analogWrite(Mot_L_EN, value);
     }
   } else {
