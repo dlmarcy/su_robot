@@ -80,16 +80,36 @@ class Teensy_Sim(Node):
 		self.battery_broadcaster = self.create_publisher(BatteryState, 'arduino/battery', 10)
 		self.battery_timer = self.create_timer(1.0/1.0, self.battery_timer_cb)
 		self.battery_msg = BatteryState()
+		self.battery_msg.header.frame_id = "battery"
+		self.battery_msg.present = True
+		self.battery_msg.power_supply_technology = POWER_SUPPLY_TECHNOLOGY_LIFE 
+		self.battery_msg.power_supply_health = POWER_SUPPLY_HEALTH_GOOD 
+		self.battery_msg.design_capacity = 6.0
 
 		# set up range sensor
 		self.range_broadcaster = self.create_publisher(Range, 'arduino/range', 10)
 		self.range_timer = self.create_timer(1.0/5.0, self.range_timer_cb)
 		self.range_msg = Range()
+		self.range_msg.header.frame_id = "range_sensor"
+		self.range_msg.radiation_type = INFRARED
+		self.range_msg.field_of_view = 0.436;  // radians
+		self.range_msg.min_range = 0.01;
+		self.range_msg.max_range = 1.0;
 
 		# set up IMU
 		self.imu_broadcaster = self.create_publisher(Imu, 'arduino/imu', 10)
 		self.imu_timer = self.create_timer(1.0/20.0, self.imu_timer_cb)
 		self.imu_msg = Imu()
+		self.imu_msg.header.frame_id = "imu"
+		self.imu_msg.orientation_covariance[0] = 1.0
+		self.imu_msg.orientation_covariance[4] = 1.0
+		self.imu_msg.orientation_covariance[8] = 1.0
+		self.imu_msg.angular_velocity_covariance[0] = 1.0
+		self.imu_msg.angular_velocity_covariance[4] = 1.0
+		self.imu_msg.angular_velocity_covariance[8] = 1.0
+		self.imu_msg.linear_acceleration_covariance[0] = 1.0
+		self.imu_msg.linear_acceleration_covariance[4] = 1.0
+		self.imu_msg.linear_acceleration_covariance[8] = 1.0
 
 		# set up encoders and broadcaster
 		self.joint_state_brodcaster = self.create_publisher(JointState, 'arduino/joint_states', 10)
