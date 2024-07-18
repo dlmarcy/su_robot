@@ -90,7 +90,7 @@ class Teensy_Sim(Node):
 		self.joint_state_msg.velocity = [0.0, 0.0, 0.0, 0.0]
 		
 		# set up PID controller, motors, and commander
-		self.joint_state_commander = self.create_subscription(JointState, 'arduino/commands', self.cmd_callback, 10)
+		self.joint_state_commander = self.create_subscription(JointState, 'arduino/commands', self.commander_cb, 10)
 		self.joint_state_commander  # prevent unused variable warning
 		self.command_msg = JointState()
 		
@@ -141,7 +141,7 @@ class Teensy_Sim(Node):
 		self.joint_state_msg.header.stamp = self.get_clock().now().to_msg()
 		self.joint_state_broadcaster.publish(self.joint_state_msg)
 
-	def cmd_callback(self, cmd):
+	def commander_cb(self, cmd):
 		self.control_left = cmd.velocity[0]
 		self.control_right = cmd.velocity[1]
 		self.control_shoulder = cmd.velocity[2]
