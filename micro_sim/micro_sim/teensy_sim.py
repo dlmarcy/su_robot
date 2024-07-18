@@ -15,17 +15,15 @@ class Teensy_Sim(Node):
 
 		# robot state variables
 		self.left_pos = 0.0
-		self.left_pos_k1 = 0.0
-		self.left_pos_k2 = 0.0
 		self.left_vel = 0.0
 		self.left_vel_k1 = 0.0
 		self.left_vel_k2 = 0.0
+		self.left_vel_k3 = 0.0
 		self.right_pos = 0.0
-		self.right_pos_k1 = 0.0
-		self.right_pos_k2 = 0.0
 		self.right_vel = 0.0
 		self.right_vel_k1 = 0.0
 		self.right_vel_k2 = 0.0
+		self.right_vel_k3 = 0.0
 		self.x = 0.0
 		self.y = 0.0
 		self.prev_v = 0.0
@@ -177,9 +175,9 @@ class Teensy_Sim(Node):
 		self.shoulder_pos += (self.shoulder_vel * self.TIMER_PERIOD)
 		self.elbow_vel = self.accelerate_stepper(self.setpoint_elbow, self.elbow_vel, self.ARM_DELTA_V)
 		self.elbow_pos += (self.elbow_vel * self.TIMER_PERIOD)
-		self.prev_w = self.w
 		slip_l = 1.0/random.paretovariate(100)
 		slip_r = 1.0/random.paretovariate(150)
+		self.prev_w = self.w
 		self.w = (slip_r*self.right_vel - slip_l*self.left_vel) * self.TIRE_SCALE_SEP
 		self.prev_v = self.v
 		self.v = (slip_r*self.right_vel + slip_l*self.left_vel) * self.TIRE_SCALE_DIA
