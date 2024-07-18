@@ -92,9 +92,9 @@ class Teensy_Sim(Node):
 		self.range_msg = Range()
 		self.range_msg.header.frame_id = "range_sensor"
 		self.range_msg.radiation_type = INFRARED
-		self.range_msg.field_of_view = 0.436;  // radians
-		self.range_msg.min_range = 0.01;
-		self.range_msg.max_range = 1.0;
+		self.range_msg.field_of_view = 0.436
+		self.range_msg.min_range = 0.01
+		self.range_msg.max_range = 1.0
 
 		# set up IMU
 		self.imu_broadcaster = self.create_publisher(Imu, 'arduino/imu', 10)
