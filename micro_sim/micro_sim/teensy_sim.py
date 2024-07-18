@@ -162,9 +162,9 @@ class Teensy_Sim(Node):
 		self.right_vel = -self.b1*self.right_vel_k1 - self.b0*self.right_vel_k2
 		self.right_vel += (self.a1*self.control_right_k1 + self.a0*self.control_right_k2)
 		self.right_pos += (self.right_vel * self.TIMER_PERIOD)
-		self.shoulder_vel = self.accelerate_motor(self.control_shoulder, self.shoulder_vel, self.ARM_DELTA_V)
+		self.shoulder_vel = self.accelerate_stepper(self.control_shoulder, self.shoulder_vel, self.ARM_DELTA_V)
 		self.shoulder_pos += (self.shoulder_vel * self.TIMER_PERIOD)
-		self.elbow_vel = self.accelerate_motor(self.control_elbow, self.elbow_vel, self.ARM_DELTA_V)
+		self.elbow_vel = self.accelerate_stepper(self.control_elbow, self.elbow_vel, self.ARM_DELTA_V)
 		self.elbow_pos += (self.elbow_vel * self.TIMER_PERIOD)
 		self.prev_w = self.w
 		self.w = (self.right_vel - self.left_vel) * self.TIRE_SCALE_SEP
@@ -175,7 +175,7 @@ class Teensy_Sim(Node):
 		self.y += (self.v * math.sin(self.theta) * self.TIMER_PERIOD)
 		self.theta += (self.w * self.TIMER_PERIOD)
 	
-	def accelerate_motor(self, setpoint, current_vel, delta_v):
+	def accelerate_stepper(self, setpoint, current_vel, delta_v):
 		if setpoint > current_vel:
 			vel = current_vel + delta_v
 			if vel > setpoint:
