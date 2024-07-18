@@ -6,21 +6,13 @@ from sensor_msgs.msg import Imu
 from sensor_msgs.msg import Range
 from sensor_msgs.msg import BatteryState
 import math
+import random
 
 class Teensy_Sim(Node):
 
 	def __init__(self):
 		super().__init__('teensy_sim')
 
-		# robot constants
-		self.ARM_ACCEL = 2.0 # rad/s/s
-		self.TIRE_DIA = 0.08 # meter
-		self.TIRE_SEP = 0.25 # meter
-		self.BASE_SENSOR_OFFSET = 0.155
-		self.TIRE_SCALE_SEP = self.TIRE_DIA/(2*self.TIRE_SEP)
-		self.TIRE_SCALE_DIA = self.TIRE_DIA/4
-		self.ARM_DELTA_V = self.ARM_ACCEL * self.TIMER_PERIOD
-		
 		# robot state variables
 		self.left_pos = 0.0
 		self.left_pos_k1 = 0.0
@@ -48,18 +40,38 @@ class Teensy_Sim(Node):
 		self.elbow_vel = 0.0
 
 		# motor model and velocity setpoints
-		self.a1 = 0.06839991
-		self.a0 = -0.05605661
-		self.b1 = -1.54671584
-		self.b0 = 0.55905915
-		self.control_left = 0.0
-		self.control_left_k1 = 0.0
-		self.control_left_k2 = 0.0
-		self.control_right = 0.0
-		self.control_right_k1 = 0.0
-		self.control_right_k2 = 0.0
-		self.control_shoulder = 0.0
-		self.control_elbow = 0.0
+		self.a0 = 0
+		self.a1 = 0.04651454
+		self.a2 = -0.01953466
+		self.a3 = -0.01519043
+		self.b0 = 1
+		self.b1 = -1.58135638
+		self.b2 = 0.64295142
+		self.b3 = -0.0498056
+		self.setpoint_left = 0.0
+		self.setpoint_left_k1 = 0.0
+		self.setpoint_left_k2 = 0.0
+		self.setpoint_left_k3 = 0.0
+		self.setpoint_right = 0.0
+		self.setpoint_right_k1 = 0.0
+		self.setpoint_right_k2 = 0.0
+		self.setpoint_right_k3 = 0.0
+		self.setpoint_shoulder = 0.0
+		self.setpoint_elbow = 0.0
+
+		# create timing variables for robot model timer
+		self.TIMER_PERIOD = 10e-3
+		self.TIMER_RATE = 1.0/self.TIMER_PERIOD
+		self.robot_model_timer = self.create_timer(self.TIMER_PERIOD, self.robot_model_timer_cb)
+
+		# robot constants
+		self.ARM_ACCEL = 2.0 # rad/s/s
+		self.TIRE_DIA = 0.08 # meter
+		self.TIRE_SEP = 0.25 # meter
+		self.BASE_SENSOR_OFFSET = 0.155
+		self.TIRE_SCALE_SEP = self.TIRE_DIA/(2*self.TIRE_SEP)
+		self.TIRE_SCALE_DIA = self.TIRE_DIA/4
+		self.ARM_DELTA_V = self.ARM_ACCEL * self.TIMER_PERIOD
 		
 		# range constants
 		self.MAX_DISTANCE = 1.0 # meters
@@ -94,11 +106,6 @@ class Teensy_Sim(Node):
 		self.joint_state_commander  # prevent unused variable warning
 		self.command_msg = JointState()
 		
-		# create timing variables for robot model timer
-		self.TIMER_PERIOD = 10e-3
-		self.TIMER_RATE = 1.0/self.TIMER_PERIOD
-		self.robot_model_timer = self.create_timer(self.TIMER_PERIOD, self.robot_model_timer_cb)
-
 	def battery_timer_cb(self):
 		self.battery_msg.voltage = 12.0
 		self.battery_msg.current = -0.7
@@ -142,37 +149,43 @@ class Teensy_Sim(Node):
 		self.joint_state_broadcaster.publish(self.joint_state_msg)
 
 	def commander_cb(self, cmd):
-		self.control_left = cmd.velocity[0]
-		self.control_right = cmd.velocity[1]
-		self.control_shoulder = cmd.velocity[2]
-		self.control_elbow = cmd.velocity[3]
+		self.setpoint_left = cmd.velocity[0]
+		self.setpoint_right = cmd.velocity[1]
+		self.setpoint_shoulder = cmd.velocity[2]
+		self.setpoint_elbow = cmd.velocity[3]
 
 	def robot_model_timer_cb(self):
+		self.left_vel_k3 = self.left_vel_k2
 		self.left_vel_k2 = self.left_vel_k1
 		self.left_vel_k1 = self.left_vel
+		self.right_vel_k3 = self.right_vel_k2
 		self.right_vel_k2 = self.right_vel_k1
 		self.right_vel_k1 = self.right_vel
-		self.control_left_k2 = self.control_left_k1
-		self.control_left_k1 = self.control_left
-		self.control_right_k2 = self.control_right_k1
-		self.control_right_k1 = self.control_right
-		self.left_vel = -self.b1*self.left_vel_k1 - self.b0*self.left_vel_k2
-		self.left_vel += (self.a1*self.control_left_k1 + self.a0*self.control_left_k2)
+		self.setpoint_left_k3 = self.setpoint_left_k2
+		self.setpoint_left_k2 = self.setpoint_left_k1
+		self.setpoint_left_k1 = self.setpoint_left
+		self.setpoint_right_k3 = self.setpoint_right_k2
+		self.setpoint_right_k2 = self.setpoint_right_k1
+		self.setpoint_right_k1 = self.setpoint_right
+		self.left_vel = -self.b1*self.left_vel_k1 - self.b2*self.left_vel_k2 - self.b3*self.left_vel_k3
+		self.left_vel += (self.a1*self.setpoint_left_k1 + self.a2*self.setpoint_left_k2+ self.a3*self.setpoint_left_k3)
 		self.left_pos += (self.left_vel * self.TIMER_PERIOD)
-		self.right_vel = -self.b1*self.right_vel_k1 - self.b0*self.right_vel_k2
-		self.right_vel += (self.a1*self.control_right_k1 + self.a0*self.control_right_k2)
+		self.right_vel = -self.b1*self.right_vel_k1 - self.b2*self.right_vel_k2 - self.b3*self.right_vel_k3
+		self.right_vel += (self.a1*self.setpoint_right_k1 + self.a2*self.setpoint_right_k2+ self.a3*self.setpoint_right_k3)
 		self.right_pos += (self.right_vel * self.TIMER_PERIOD)
-		self.shoulder_vel = self.accelerate_stepper(self.control_shoulder, self.shoulder_vel, self.ARM_DELTA_V)
+		self.shoulder_vel = self.accelerate_stepper(self.setpoint_shoulder, self.shoulder_vel, self.ARM_DELTA_V)
 		self.shoulder_pos += (self.shoulder_vel * self.TIMER_PERIOD)
-		self.elbow_vel = self.accelerate_stepper(self.control_elbow, self.elbow_vel, self.ARM_DELTA_V)
+		self.elbow_vel = self.accelerate_stepper(self.setpoint_elbow, self.elbow_vel, self.ARM_DELTA_V)
 		self.elbow_pos += (self.elbow_vel * self.TIMER_PERIOD)
 		self.prev_w = self.w
-		self.w = (self.right_vel - self.left_vel) * self.TIRE_SCALE_SEP
+		slip_l = 1.0/random.paretovariate(100)
+		slip_r = 1.0/random.paretovariate(150)
+		self.w = (slip_r*self.right_vel - slip_l*self.left_vel) * self.TIRE_SCALE_SEP
 		self.prev_v = self.v
-		self.v = (self.right_vel + self.left_vel) * self.TIRE_SCALE_DIA
+		self.v = (slip_r*self.right_vel + slip_l*self.left_vel) * self.TIRE_SCALE_DIA
 		self.a = (self.v - self.prev_v) * self.TIMER_RATE
-		self.x += (self.v * math.cos(self.theta) * self.TIMER_PERIOD)
-		self.y += (self.v * math.sin(self.theta) * self.TIMER_PERIOD)
+		self.x += (self.v * self.TIMER_PERIOD * math.cos(self.theta))
+		self.y += (self.v * self.TIMER_PERIOD * math.sin(self.theta))
 		self.theta += (self.w * self.TIMER_PERIOD)
 	
 	def accelerate_stepper(self, setpoint, current_vel, delta_v):
