@@ -218,7 +218,7 @@ void setup() {
 
   // set up IMU
   imu_id = micro_ros.beginBroadcaster(MicroROSArduino::IMU, "imu", 20.0, &imu_timer_cb);
-  rosidl_runtime_c__String__assignn(&micro_ros.imu_msg[0].header.frame_id, "imu", 3);
+  rosidl_runtime_c__String__assignn(&micro_ros.imu_msg[imu_id].header.frame_id, "imu", 3);
   micro_ros.imu_msg[imu_id].orientation_covariance[0] = 1.0;
   micro_ros.imu_msg[imu_id].orientation_covariance[4] = 1.0;
   micro_ros.imu_msg[imu_id].orientation_covariance[8] = 1.0;
