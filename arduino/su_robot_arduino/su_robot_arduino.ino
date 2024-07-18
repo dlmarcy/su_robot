@@ -14,28 +14,28 @@
 #include <AccelStepper.h>
 
 // GPIO pin definitions
-int Mot_L_EN = 4;
-int Mot_L_PH = 5;
-int Mot_R_EN = 3;
-int Mot_R_PH = 2;
-int Encode_L1 = 17;
-int Encode_L2 = 16;
-int Encode_R1 = 0;
-int Encode_R2 = 1;
-int Step1_Or = 20;
-int Step1_Ye = 6;
-int Step1_Pi = 12;
-int Step1_Bl = 11;
-int Step2_Or = 7;
-int Step2_Ye = 8;
-int Step2_Pi = 9;
-int Step2_Bl = 10;
-int LED_GRN1 = 14; // SOC LEDs
-int LED_RED1 = 15;
-int LED_GRN2 = 22; // Current LEDs
-int LED_RED2 = 23;
-int Teensy_LED = 13;
-int Push_But = 21;
+const int Mot_L_EN = 4;
+const int Mot_L_PH = 5;
+const int Mot_R_EN = 3;
+const int Mot_R_PH = 2;
+const int Encode_L1 = 17;
+const int Encode_L2 = 16;
+const int Encode_R1 = 0;
+const int Encode_R2 = 1;
+const int Step1_Or = 20;
+const int Step1_Ye = 6;
+const int Step1_Pi = 12;
+const int Step1_Bl = 11;
+const int Step2_Or = 7;
+const int Step2_Ye = 8;
+const int Step2_Pi = 9;
+const int Step2_Bl = 10;
+const int LED_GRN1 = 14; // SOC LEDs
+const int LED_RED1 = 15;
+const int LED_GRN2 = 22; // Current LEDs
+const int LED_RED2 = 23;
+const int Teensy_LED = 13;
+const int Push_But = 21;
 
 const int LEFT = 1;
 const int RIGHT = 2;
@@ -114,6 +114,15 @@ void range_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
 
 void imu_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
   imu_sensor.getCalibration(&system_cal, &gyro_cal, &accel_cal, &mag_cal);
+  if (gyro_cal==3 && accel_cal==3 && mag_cal==3) {
+    if (system_cal==3) {
+      analogWrite(LED_GRN2, 255); analogWrite(LED_RED2, 0);
+    } else {
+      analogWrite(LED_GRN2, 190); analogWrite(LED_RED2, 65);
+    }
+  } else {
+    analogWrite(LED_GRN2, 0); analogWrite(LED_RED2, 255);
+  }
   quat = imu_sensor.getQuat();
   gyro = imu_sensor.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
   accel = imu_sensor.getVector(Adafruit_BNO055::VECTOR_ACCELEROMETER);
