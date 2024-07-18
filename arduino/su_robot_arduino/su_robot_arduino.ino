@@ -150,6 +150,10 @@ void joint_state_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
   micro_ros.joint_state_msg.velocity.data[0] = input_l;
   micro_ros.joint_state_msg.position.data[1] = scale_radians_pos*encoder_r;
   micro_ros.joint_state_msg.velocity.data[1] = input_r;
+  micro_ros.joint_state_msg.position.data[2] = scale_radians_arm*control_shoulder.currentPosition()
+  micro_ros.joint_state_msg.velocity.data[2] = scale_radians_arm*control_shoulder.speed()
+  micro_ros.joint_state_msg.position.data[3] = scale_radians_arm*control_elbow.currentPosition()
+  micro_ros.joint_state_msg.velocity.data[3] = scale_radians_arm*control_elbow.speed()
   micro_ros.publishJointStateBroad(joint_states_id);
 }
 
