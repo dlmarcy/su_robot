@@ -11,31 +11,6 @@ class Teensy_Sim(Node):
 
 	def __init__(self):
 		super().__init__('teensy_sim')
-		
-		# create publishers and message variables
-		self.pub_motors = self.create_publisher(JointState, 'arduino/joint_states', 10)
-		self.pub_imu = self.create_publisher(Imu, 'arduino/imu', 10)
-		self.pub_range = self.create_publisher(Range, 'arduino/range', 10)
-		self.pub_battery = self.create_publisher(BatteryState, 'arduino/battery', 10)
-		self.motor_msg = JointState()
-		self.motor_msg.name = ['motor_left_shaft', 'motor_right_shaft', 'motor_shoulder_shaft', 'motor_elbow_shaft']
-		self.motor_msg.position = [0.0, 0.0, 0.0, 0.0]
-		self.motor_msg.velocity = [0.0, 0.0, 0.0, 0.0]
-		self.imu_msg = Imu()
-		self.range_msg = Range()
-		self.battery_msg = BatteryState()
-		
-		# create subscribers and message variables
-		self.sub_commands = self.create_subscription(JointState, 'arduino/commands', self.cmd_callback, 10)
-		self.sub_commands  # prevent unused variable warning
-		self.command_msg = JointState()
-		
-		# create timing variables for a tick timer
-		self.TIMER_TICK = 10 # milliseconds
-		self.TIMER_PERIOD = self.TIMER_TICK * 1e-3
-		self.TIMER_RATE = 1.0/self.TIMER_PERIOD
-		self.tick_timer = self.create_timer(self.TIMER_PERIOD, self.tick_callback)
-		self.ticks = 0
 
 		# robot constants
 		self.ARM_ACCEL = 2.0 # rad/s/s
@@ -46,11 +21,6 @@ class Teensy_Sim(Node):
 		self.TIRE_SCALE_DIA = self.TIRE_DIA/4
 		self.ARM_DELTA_V = self.ARM_ACCEL * self.TIMER_PERIOD
 		
-		# range constants
-		self.MAX_DISTANCE = 1.2 # meters
-		#self.SEGMENTS = self.get_parameter('teensy/segments').get_parameter_value().double_array_value
-		self.SEGMENTS = []
-
 		# robot state variables
 		self.left_pos = 0.0
 		self.left_pos_k1 = 0.0
@@ -91,43 +61,85 @@ class Teensy_Sim(Node):
 		self.control_shoulder = 0.0
 		self.control_elbow = 0.0
 		
-	def tick_callback(self):
-		self.ticks = (self.ticks + 1) % 100
-		self.update_robot_state()
-		if self.ticks % 5 == 0:
-			self.imu_msg.orientation.w = math.cos(0.5 * self.theta)
-			self.imu_msg.orientation.z = math.sin(0.5 * self.theta)
-			self.imu_msg.angular_velocity.z = self.w * 57.295779513 # teensy BNO055 is using degrees/s
-			if self.w == 0.0:
-				self.imu_msg.linear_acceleration.x = self.a
-				self.imu_msg.linear_acceleration.y = 0.0
+		# range constants
+		self.MAX_DISTANCE = 1.0 # meters
+		#self.SEGMENTS = self.get_parameter('teensy/segments').get_parameter_value().double_array_value
+		self.SEGMENTS = []
+
+		# set up power monitor
+		self.battery_broadcaster = self.create_publisher(BatteryState, 'arduino/battery', 10)
+		self.battery_timer = self.create_timer(1.0/1.0, self.battery_timer_cb)
+		self.battery_msg = BatteryState()
+
+		# set up range sensor
+		self.range_broadcaster = self.create_publisher(Range, 'arduino/range', 10)
+		self.range_timer = self.create_timer(1.0/5.0, self.range_timer_cb)
+		self.range_msg = Range()
+
+		# set up IMU
+		self.imu_broadcaster = self.create_publisher(Imu, 'arduino/imu', 10)
+		self.imu_timer = self.create_timer(1.0/20.0, self.imu_timer_cb)
+		self.imu_msg = Imu()
+
+		# set up encoders and broadcaster
+		self.joint_state_brodcaster = self.create_publisher(JointState, 'arduino/joint_states', 10)
+		self.joint_state_timer = self.create_timer(1.0/10.0, self.joint_state_timer_cb)
+		self.joint_state_msg = JointState()
+		self.joint_state_msg.name = ['motor_left_shaft', 'motor_right_shaft', 'motor_shoulder_shaft', 'motor_elbow_shaft']
+		self.joint_state_msg.position = [0.0, 0.0, 0.0, 0.0]
+		self.joint_state_msg.velocity = [0.0, 0.0, 0.0, 0.0]
+		
+		# set up PID controller, motors, and commander
+		self.joint_state_commander = self.create_subscription(JointState, 'arduino/commands', self.cmd_callback, 10)
+		self.joint_state_commander  # prevent unused variable warning
+		self.command_msg = JointState()
+		
+		# create timing variables for robot model timer
+		self.TIMER_PERIOD = 10e-3
+		self.TIMER_RATE = 1.0/self.TIMER_PERIOD
+		self.robot_model_timer = self.create_timer(self.TIMER_PERIOD, self.robot_model_timer_cb)
+
+	def battery_timer_cb(self):
+		self.battery_msg.voltage = 12.0
+		self.battery_msg.current = -0.7
+		self.battery_msg.header.stamp = self.get_clock().now().to_msg()
+		self.battery_broadcaster.publish(self.battery_msg)
+		
+	def range_timer_cb(self):
+		d = self.detect_range()
+		self.range_msg.range = d
+		self.range_msg.header.stamp = self.get_clock().now().to_msg()
+		self.range_broadcaster.publish(self.range_msg)
+		
+	def imu_timer_cb(self):
+		self.imu_msg.orientation.w = math.cos(0.5 * self.theta)
+		self.imu_msg.orientation.z = math.sin(0.5 * self.theta)
+		self.imu_msg.angular_velocity.z = self.w * 57.295779513 # teensy BNO055 is using degrees/s
+		if self.w == 0.0:
+			self.imu_msg.linear_acceleration.x = self.a
+			self.imu_msg.linear_acceleration.y = 0.0
+		else:
+			R = self.v/self.w
+			self.imu_msg.linear_acceleration.x = self.a + R * (self.w - self.prev_w) * self.TIMER_RATE
+			if self.w < 0.0:
+				self.imu_msg.linear_acceleration.y = -R * self.w * self.w
 			else:
-				R = self.v/self.w
-				self.imu_msg.linear_acceleration.x = self.a + R * (self.w - self.prev_w) * self.TIMER_RATE
-				if self.w < 0.0:
-					self.imu_msg.linear_acceleration.y = -R * self.w * self.w
-				else:
-					self.imu_msg.linear_acceleration.y = R * self.w * self.w			
-			self.pub_imu.publish(self.imu_msg)
-		if (self.ticks + 7) % 10 == 0:
-			self.motor_msg.position[0] = self.left_pos
-			self.motor_msg.velocity[0] = self.left_vel
-			self.motor_msg.position[1] = self.right_pos
-			self.motor_msg.velocity[1] = self.right_vel
-			self.motor_msg.position[2] = self.shoulder_pos
-			self.motor_msg.velocity[2] = self.shoulder_vel
-			self.motor_msg.position[3] = self.elbow_pos
-			self.motor_msg.velocity[3] = self.elbow_vel
-			self.motor_msg.header.stamp = self.get_clock().now().to_msg()
-			self.pub_motors.publish(self.motor_msg)
-		if (self.ticks + 2) % 10 == 0:
-			d = self.detect_range()
-			self.range_msg.range = d
-			self.pub_range.publish(self.range_msg)
-		if self.ticks == 9:
-			self.battery_msg.voltage = 12.0
-			self.battery_msg.current = -0.7
-			self.pub_battery.publish(self.battery_msg)
+				self.imu_msg.linear_acceleration.y = R * self.w * self.w
+		self.imu_msg.header.stamp = self.get_clock().now().to_msg()
+		self.imu_broadcaster.publish(self.imu_msg)
+
+	def joint_state_timer_cb(self):
+		self.ticks = (self.ticks + 1) % 100
+		self.joint_state_msg.position[0] = self.left_pos
+		self.joint_state_msg.velocity[0] = self.left_vel
+		self.joint_state_msg.position[1] = self.right_pos
+		self.joint_state_msg.velocity[1] = self.right_vel
+		self.joint_state_msg.position[2] = self.shoulder_pos
+		self.joint_state_msg.velocity[2] = self.shoulder_vel
+		self.joint_state_msg.position[3] = self.elbow_pos
+		self.joint_state_msg.velocity[3] = self.elbow_vel
+		self.joint_state_msg.header.stamp = self.get_clock().now().to_msg()
+		self.joint_state_broadcaster.publish(self.joint_state_msg)
 
 	def cmd_callback(self, cmd):
 		self.control_left = cmd.velocity[0]
@@ -135,7 +147,7 @@ class Teensy_Sim(Node):
 		self.control_shoulder = cmd.velocity[2]
 		self.control_elbow = cmd.velocity[3]
 
-	def update_robot_state(self):
+	def robot_model_timer_cb(self):
 		self.left_vel_k2 = self.left_vel_k1
 		self.left_vel_k1 = self.left_vel
 		self.right_vel_k2 = self.right_vel_k1
