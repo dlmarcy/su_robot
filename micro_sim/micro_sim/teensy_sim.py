@@ -82,8 +82,9 @@ class Teensy_Sim(Node):
 		self.battery_msg = BatteryState()
 		self.battery_msg.header.frame_id = "battery"
 		self.battery_msg.present = True
-		self.battery_msg.power_supply_technology = POWER_SUPPLY_TECHNOLOGY_LIFE 
-		self.battery_msg.power_supply_health = POWER_SUPPLY_HEALTH_GOOD 
+		self.battery_msg.power_supply_technology = 4 #POWER_SUPPLY_TECHNOLOGY_LIFE 
+		self.battery_msg.power_supply_health = 1 # POWER_SUPPLY_HEALTH_GOOD 
+		self.battery_msg.power_supply_status = 4 # POWER_SUPPLY_STATUS_FULL 
 		self.battery_msg.design_capacity = 6.0
 
 		# set up range sensor
@@ -91,7 +92,7 @@ class Teensy_Sim(Node):
 		self.range_timer = self.create_timer(1.0/5.0, self.range_timer_cb)
 		self.range_msg = Range()
 		self.range_msg.header.frame_id = "range_sensor"
-		self.range_msg.radiation_type = INFRARED
+		self.range_msg.radiation_type = 1 # INFRARED
 		self.range_msg.field_of_view = 0.436
 		self.range_msg.min_range = 0.01
 		self.range_msg.max_range = 1.0
@@ -112,7 +113,7 @@ class Teensy_Sim(Node):
 		self.imu_msg.linear_acceleration_covariance[8] = 1.0
 
 		# set up encoders and broadcaster
-		self.joint_state_brodcaster = self.create_publisher(JointState, 'arduino/joint_states', 10)
+		self.joint_state_broadcaster = self.create_publisher(JointState, 'arduino/joint_states', 10)
 		self.joint_state_timer = self.create_timer(1.0/10.0, self.joint_state_timer_cb)
 		self.joint_state_msg = JointState()
 		self.joint_state_msg.name = ['motor_left_shaft', 'motor_right_shaft', 'motor_shoulder_shaft', 'motor_elbow_shaft']
@@ -154,7 +155,6 @@ class Teensy_Sim(Node):
 		self.imu_broadcaster.publish(self.imu_msg)
 
 	def joint_state_timer_cb(self):
-		self.ticks = (self.ticks + 1) % 100
 		self.joint_state_msg.position[0] = self.left_pos
 		self.joint_state_msg.velocity[0] = self.left_vel
 		self.joint_state_msg.position[1] = self.right_pos

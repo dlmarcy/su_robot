@@ -44,8 +44,8 @@ const int RIGHT = 2;
 MicroROSArduino micro_ros;
 
 // define battery variables and objects
-uint8_t battery_id;
-Adafruit_INA219 power_monitor;
+//uint8_t battery_id;
+//Adafruit_INA219 power_monitor;
 
 // define range variables and objects
 uint8_t range_id;
@@ -99,11 +99,11 @@ const float scale_radians_vel = 1.0/scale_counts_vel;
 const float scale_steps_arm = 1019.0/3.14159; // steps per radian
 const float scale_radians_arm = 1.0/scale_steps_arm; // radians per step
 
-void battery_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
-  micro_ros.battery_msg[battery_id].voltage = power_monitor.getBusVoltage_V() + (power_monitor.getShuntVoltage_mV()/1000.0);
-  micro_ros.battery_msg[battery_id].current = power_monitor.getCurrent_mA()/-1000.0;
-  micro_ros.publishBattery(battery_id);
-}
+//void battery_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
+//  micro_ros.battery_msg[battery_id].voltage = power_monitor.getBusVoltage_V() + (power_monitor.getShuntVoltage_mV()/1000.0);
+//  micro_ros.battery_msg[battery_id].current = power_monitor.getCurrent_mA()/-1000.0;
+//  micro_ros.publishBattery(battery_id);
+//}
 
 void range_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
   float range = range_sensor.readRangeContinuousMillimeters()*0.001;
@@ -150,10 +150,10 @@ void joint_state_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
   micro_ros.joint_state_msg.velocity.data[0] = input_l;
   micro_ros.joint_state_msg.position.data[1] = scale_radians_pos*encoder_r;
   micro_ros.joint_state_msg.velocity.data[1] = input_r;
-  micro_ros.joint_state_msg.position.data[2] = scale_radians_arm*control_shoulder.currentPosition()
-  micro_ros.joint_state_msg.velocity.data[2] = scale_radians_arm*control_shoulder.speed()
-  micro_ros.joint_state_msg.position.data[3] = scale_radians_arm*control_elbow.currentPosition()
-  micro_ros.joint_state_msg.velocity.data[3] = scale_radians_arm*control_elbow.speed()
+  micro_ros.joint_state_msg.position.data[2] = scale_radians_arm*control_shoulder.currentPosition();
+  micro_ros.joint_state_msg.velocity.data[2] = scale_radians_arm*control_shoulder.speed();
+  micro_ros.joint_state_msg.position.data[3] = scale_radians_arm*control_elbow.currentPosition();
+  micro_ros.joint_state_msg.velocity.data[3] = scale_radians_arm*control_elbow.speed();
   micro_ros.publishJointStateBroad(joint_states_id);
 }
 
@@ -200,13 +200,13 @@ void setup() {
   pinMode(Push_But, INPUT_PULLDOWN); // Pushbutton
 
   // set up power monitor
-  battery_id = micro_ros.beginBroadcaster(MicroROSArduino::BATTERY, "battery", 1.0, &battery_timer_cb);
-  rosidl_runtime_c__String__assignn(&micro_ros.battery_msg[battery_id].header.frame_id, "battery", 7);
-  micro_ros.battery_msg[battery_id].present = true;
-  micro_ros.battery_msg[battery_id].power_supply_technology = sensor_msgs__msg__BatteryState__POWER_SUPPLY_TECHNOLOGY_LIFE;
-  micro_ros.battery_msg[battery_id].power_supply_health = sensor_msgs__msg__BatteryState__POWER_SUPPLY_HEALTH_GOOD;
-  micro_ros.battery_msg[battery_id].design_capacity = 6.0;  //Ah
-  power_monitor.begin();
+//  battery_id = micro_ros.beginBroadcaster(MicroROSArduino::BATTERY, "battery", 1.0, &battery_timer_cb);
+//  rosidl_runtime_c__String__assignn(&micro_ros.battery_msg[battery_id].header.frame_id, "battery", 7);
+//  micro_ros.battery_msg[battery_id].present = true;
+//  micro_ros.battery_msg[battery_id].power_supply_technology = sensor_msgs__msg__BatteryState__POWER_SUPPLY_TECHNOLOGY_LIFE;
+//  micro_ros.battery_msg[battery_id].power_supply_health = sensor_msgs__msg__BatteryState__POWER_SUPPLY_HEALTH_GOOD;
+//  micro_ros.battery_msg[battery_id].design_capacity = 6.0;  //Ah
+//  power_monitor.begin();
 
   // set up range sensor
   range_id = micro_ros.beginBroadcaster(MicroROSArduino::RANGE, "range", 5.0, &range_timer_cb);
