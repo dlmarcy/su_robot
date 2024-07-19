@@ -102,15 +102,15 @@ class Teensy_Sim(Node):
 		self.imu_timer = self.create_timer(1.0/20.0, self.imu_timer_cb)
 		self.imu_msg = Imu()
 		self.imu_msg.header.frame_id = "imu"
-		self.imu_msg.orientation_covariance[0] = 1.0
-		self.imu_msg.orientation_covariance[4] = 1.0
-		self.imu_msg.orientation_covariance[8] = 1.0
-		self.imu_msg.angular_velocity_covariance[0] = 1.0
-		self.imu_msg.angular_velocity_covariance[4] = 1.0
-		self.imu_msg.angular_velocity_covariance[8] = 1.0
-		self.imu_msg.linear_acceleration_covariance[0] = 1.0
-		self.imu_msg.linear_acceleration_covariance[4] = 1.0
-		self.imu_msg.linear_acceleration_covariance[8] = 1.0
+		self.imu_msg.orientation_covariance[0] = 0.01
+		self.imu_msg.orientation_covariance[4] = 0.01
+		self.imu_msg.orientation_covariance[8] = 0.01
+		self.imu_msg.angular_velocity_covariance[0] = 0.00005
+		self.imu_msg.angular_velocity_covariance[4] = 0.00005
+		self.imu_msg.angular_velocity_covariance[8] = 0.00005
+		self.imu_msg.linear_acceleration_covariance[0] = 0.002
+		self.imu_msg.linear_acceleration_covariance[4] = 0.002
+		self.imu_msg.linear_acceleration_covariance[8] = 0.002
 
 		# set up encoders and broadcaster
 		self.joint_state_broadcaster = self.create_publisher(JointState, 'arduino/joint_states', 10)
@@ -140,7 +140,7 @@ class Teensy_Sim(Node):
 	def imu_timer_cb(self):
 		self.imu_msg.orientation.w = math.cos(0.5 * self.theta)
 		self.imu_msg.orientation.z = math.sin(0.5 * self.theta)
-		self.imu_msg.angular_velocity.z = self.w * 57.295779513 # teensy BNO055 is using degrees/s
+		self.imu_msg.angular_velocity.z = self.w
 		if self.w == 0.0:
 			self.imu_msg.linear_acceleration.x = self.a
 			self.imu_msg.linear_acceleration.y = 0.0

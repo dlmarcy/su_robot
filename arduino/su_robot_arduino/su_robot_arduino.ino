@@ -98,6 +98,7 @@ const float scale_counts_vel = scale_counts_pos*0.1;
 const float scale_radians_vel = 1.0/scale_counts_vel;
 const float scale_steps_arm = 1019.0/3.14159; // steps per radian
 const float scale_radians_arm = 1.0/scale_steps_arm; // radians per step
+const float scale_deg_rad = 3.1415926536/180.0;
 
 //void battery_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
 //  micro_ros.battery_msg[battery_id].voltage = power_monitor.getBusVoltage_V() + (power_monitor.getShuntVoltage_mV()/1000.0);
@@ -130,9 +131,9 @@ void imu_timer_cb(rcl_timer_t * timer, int64_t last_call_time) {
   micro_ros.imu_msg[imu_id].orientation.x = quat.x();
   micro_ros.imu_msg[imu_id].orientation.y = quat.y();
   micro_ros.imu_msg[imu_id].orientation.z = quat.z();
-  micro_ros.imu_msg[imu_id].angular_velocity.x = gyro.x();
-  micro_ros.imu_msg[imu_id].angular_velocity.y = gyro.y();
-  micro_ros.imu_msg[imu_id].angular_velocity.z = gyro.z();
+  micro_ros.imu_msg[imu_id].angular_velocity.x = scale_deg_rad*gyro.x();
+  micro_ros.imu_msg[imu_id].angular_velocity.y = scale_deg_rad*gyro.y();
+  micro_ros.imu_msg[imu_id].angular_velocity.z = scale_deg_rad*gyro.z();
   micro_ros.imu_msg[imu_id].linear_acceleration.x = accel.x();
   micro_ros.imu_msg[imu_id].linear_acceleration.y = accel.y();
   micro_ros.imu_msg[imu_id].linear_acceleration.z = accel.z();
@@ -223,15 +224,15 @@ void setup() {
   // set up IMU
   imu_id = micro_ros.beginBroadcaster(MicroROSArduino::IMU, "imu", 20.0, &imu_timer_cb);
   rosidl_runtime_c__String__assignn(&micro_ros.imu_msg[imu_id].header.frame_id, "imu", 3);
-  micro_ros.imu_msg[imu_id].orientation_covariance[0] = 1.0;
-  micro_ros.imu_msg[imu_id].orientation_covariance[4] = 1.0;
-  micro_ros.imu_msg[imu_id].orientation_covariance[8] = 1.0;
-  micro_ros.imu_msg[imu_id].angular_velocity_covariance[0] = 1.0;
-  micro_ros.imu_msg[imu_id].angular_velocity_covariance[4] = 1.0;
-  micro_ros.imu_msg[imu_id].angular_velocity_covariance[8] = 1.0;
-  micro_ros.imu_msg[imu_id].linear_acceleration_covariance[0] = 1.0;
-  micro_ros.imu_msg[imu_id].linear_acceleration_covariance[4] = 1.0;
-  micro_ros.imu_msg[imu_id].linear_acceleration_covariance[8] = 1.0;
+  micro_ros.imu_msg[imu_id].orientation_covariance[0] = 0.01;
+  micro_ros.imu_msg[imu_id].orientation_covariance[4] = 0.01;
+  micro_ros.imu_msg[imu_id].orientation_covariance[8] = 0.01;
+  micro_ros.imu_msg[imu_id].angular_velocity_covariance[0] = 0.00005;
+  micro_ros.imu_msg[imu_id].angular_velocity_covariance[4] = 0.00005;
+  micro_ros.imu_msg[imu_id].angular_velocity_covariance[8] = 0.00005;
+  micro_ros.imu_msg[imu_id].linear_acceleration_covariance[0] = 0.002;
+  micro_ros.imu_msg[imu_id].linear_acceleration_covariance[4] = 0.002;
+  micro_ros.imu_msg[imu_id].linear_acceleration_covariance[8] = 0.002;
   imu_sensor.begin(); 
   EEPROM.get(eeAddress, bnoID); // Check for calibration data in Teensy's EEPROM
   imu_sensor.getSensor(&sensor);
