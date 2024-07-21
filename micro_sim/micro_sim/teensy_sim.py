@@ -241,14 +241,22 @@ class Teensy_Sim(Node):
 		return distance
 
 def main(args=None):
-	rclpy.init(args=args)
+	try:
+		rclpy.init(args=args)
 
-	simulator = Teensy_Sim()
+		simulator = Teensy_Sim()
 
-	print('Starting Teensy simulation node')
+		# print('Starting Teensy simulation node')
+		get_logger().info('Starting Teensy simulation node')
 
-	rclpy.spin(simulator)
+		rclpy.spin(simulator)
+	
+	except KeyboardInterrupt:
+		pass
 
+	except Exception as e:
+		print(e)
+    
 	# Destroy the node explicitly
 	# (optional - otherwise it will be done automatically
 	# when the garbage collector destroys the node object)
