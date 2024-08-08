@@ -24,7 +24,7 @@ import launch.actions
 from launch.actions import DeclareLaunchArgument
 
 def generate_launch_description():
-	ekf_params = os.path.join(get_package_share_directory('robot_base'), 'params', 'ekf_params.yaml')
+	ekf_params = os.path.join(get_package_share_directory('robot_base'), 'params', 'ekf_imu_params.yaml')
 
 	return LaunchDescription([
 		launch_ros.actions.Node(

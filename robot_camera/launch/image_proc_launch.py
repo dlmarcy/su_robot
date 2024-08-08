@@ -16,6 +16,12 @@
 from launch import LaunchDescription
 from ament_index_python.packages import get_package_share_directory
 import launch_ros.actions
+from launch.actions import GroupAction
+from launch_ros.actions import PushRosNamespace
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
+from launch.actions import IncludeLaunchDescription
+from launch.substitutions import TextSubstitution
 import os
 import yaml
 from launch.substitutions import EnvironmentVariable
@@ -24,14 +30,21 @@ import launch.actions
 from launch.actions import DeclareLaunchArgument
 
 def generate_launch_description():
-	ekf_params = os.path.join(get_package_share_directory('robot_base'), 'params', 'ekf_params.yaml')
+	image_proc_launch = os.path.join(get_package_share_directory('image_proc'), 'launch', 'image_proc.launch.py')
+
+	image_proc_namespace = DeclareLaunchArgument('camera_ns', default_value=TextSubstitution(text='camera'))
+	
+	#image_proc_include = IncludeLaunchDescription(PythonLaunchDescriptionSource(image_proc_launch))
+	
+	image_proc_include = GroupAction(
+		actions=[
+			# push-ros-namespace to set namespace of included nodes
+			PushRosNamespace(LaunchConfiguration('camera_ns')),
+			IncludeLaunchDescription(PythonLaunchDescriptionSource(image_proc_launch))
+		]
+	)
 
 	return LaunchDescription([
-		launch_ros.actions.Node(
-		package='robot_localization',
-		executable='ekf_node',
-		name='ekf_filter_node',
-		output='screen',
-		parameters=[ekf_params],
-	),
+		image_proc_namespace,
+		image_proc_include
 ])
