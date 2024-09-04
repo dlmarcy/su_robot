@@ -4,7 +4,7 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 
 def generate_launch_description():
-	urdf_path = os.path.join(get_package_share_directory('robot_control'), 'urdf', 'robot.urdf')
+	urdf_path = os.path.join(get_package_share_directory('robot_control'), 'urdf', 'guy_robot.urdf')
 	urdf_file = open(urdf_path).read()
 
 	return LaunchDescription([

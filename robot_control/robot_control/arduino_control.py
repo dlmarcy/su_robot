@@ -11,9 +11,15 @@ class Arduino_Control(Node):
 		# create publishers and message variables
 		self.pub_motors = self.create_publisher(JointState, 'arduino/commands', 10)
 		self.motor_msg = JointState()
+<<<<<<< HEAD
 		self.motor_msg.name = ['gear_left_shaft', 'gear_right_shaft']
 		self.motor_msg.position = [0.0, 0.0]
 		self.motor_msg.velocity = [0.0, 0.0]
+=======
+		self.motor_msg.name = ['motor_left_shaft', 'motor_right_shaft', 'motor_shoulder_shaft', 'motor_elbow_shaft']
+		self.motor_msg.position = [0.0, 0.0, 0.0, 0.0]
+		self.motor_msg.velocity = [0.0, 0.0, 0.0, 0.0]
+>>>>>>> 4189d12fe1407ca1d036c8c15d7c3923f83c5e7a
 		
 		# create timing variables for a tick timer
 		self.TIMER_TICK = 200 # milliseconds
@@ -23,6 +29,7 @@ class Arduino_Control(Node):
 		self.ticks = 0
 
 	def tick_callback(self):
+<<<<<<< HEAD
 		self.ticks = (self.ticks + 1) % 100
 		if self.ticks == 0:
 			self.motor_msg.velocity = [0.0, 0.0] # radians per second
@@ -38,6 +45,39 @@ class Arduino_Control(Node):
 			self.pub_motors.publish(self.motor_msg)
 		elif self.ticks == 75:
 			self.motor_msg.velocity = [-6.0, 3.0] # radians per second
+=======
+		self.ticks = (self.ticks + 1) % 200
+		if self.ticks == 0:
+			self.motor_msg.velocity = [0.0, 0.0, 0.0, 0.0] # radians per second
+			self.motor_msg.header.stamp = self.get_clock().now().to_msg()
+			self.pub_motors.publish(self.motor_msg)
+		elif self.ticks == 25:
+			self.motor_msg.velocity = [4.0, 0.0, 0.0, 0.0] # radians per second
+			self.motor_msg.header.stamp = self.get_clock().now().to_msg()
+			self.pub_motors.publish(self.motor_msg)
+		elif self.ticks == 50:
+			self.motor_msg.velocity = [0.0, -2.0, 0.0, 0.0] # radians per second
+			self.motor_msg.header.stamp = self.get_clock().now().to_msg()
+			self.pub_motors.publish(self.motor_msg)
+		elif self.ticks == 75:
+			self.motor_msg.velocity = [-6.0, 3.0, 0.0, 0.0] # radians per second
+			self.motor_msg.header.stamp = self.get_clock().now().to_msg()
+			self.pub_motors.publish(self.motor_msg)
+		elif self.ticks == 100:
+			self.motor_msg.velocity = [0.0, 0.0, 0.1, 0.0] # radians per second
+			self.motor_msg.header.stamp = self.get_clock().now().to_msg()
+			self.pub_motors.publish(self.motor_msg)
+		elif self.ticks == 125:
+			self.motor_msg.velocity = [0.0, 0.0, 0.0, -0.2] # radians per second
+			self.motor_msg.header.stamp = self.get_clock().now().to_msg()
+			self.pub_motors.publish(self.motor_msg)
+		elif self.ticks == 150:
+			self.motor_msg.velocity = [0.0, 0.0, -0.25, 0.1] # radians per second
+			self.motor_msg.header.stamp = self.get_clock().now().to_msg()
+			self.pub_motors.publish(self.motor_msg)
+		elif self.ticks == 175:
+			self.motor_msg.velocity = [0.0, 0.0, 0.15, 0.1] # radians per second
+>>>>>>> 4189d12fe1407ca1d036c8c15d7c3923f83c5e7a
 			self.motor_msg.header.stamp = self.get_clock().now().to_msg()
 			self.pub_motors.publish(self.motor_msg)
 

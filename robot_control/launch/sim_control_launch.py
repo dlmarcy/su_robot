@@ -4,11 +4,17 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 
 def generate_launch_description():
-	urdf_path = os.path.join(get_package_share_directory('robot_control'), 'urdf', 'robot.urdf')
+	urdf_path = os.path.join(get_package_share_directory('robot_control'), 'urdf', 'su_robot.urdf')
 	urdf_file = open(urdf_path).read()
 	control_params = os.path.join(get_package_share_directory('robot_control'), 'params', 'control_params.yaml')
 
 	return LaunchDescription([
+		Node(
+			package = 'micro_sim',
+			executable = 'teensy_sim',
+			name = 'teensy_sim',
+			output={'stdout': 'screen', 'stderr': 'screen'}
+		),
 		Node(
 			package='robot_state_publisher',
 			executable='robot_state_publisher',
@@ -20,7 +26,6 @@ def generate_launch_description():
 			package="controller_manager",
 			executable="ros2_control_node",
 			output={'stdout': 'screen', 'stderr': 'screen'},
-			#parameters=[{'robot_description': urdf_file}, control_params]
 			parameters=[control_params],
 			remappings=[('/controller_manager/robot_description', '/robot_description')]
 		),
