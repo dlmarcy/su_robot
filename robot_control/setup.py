@@ -25,6 +25,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'arduino_control = robot_control.arduino_control:main',
         ],
     },
 )
