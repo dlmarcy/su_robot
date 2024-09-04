@@ -63,18 +63,18 @@ class Teensy_Sim(Node):
 		self.robot_model_timer = self.create_timer(self.TIMER_PERIOD, self.robot_model_timer_cb)
 
 		# robot constants
-		self.ARM_ACCEL = 2.0 # rad/s/s
 		self.TIRE_DIA = 0.08 # meter
 		self.TIRE_SEP = 0.25 # meter
-		self.BASE_SENSOR_OFFSET = 0.155
 		self.TIRE_SCALE_SEP = self.TIRE_DIA/(2*self.TIRE_SEP)
 		self.TIRE_SCALE_DIA = self.TIRE_DIA/4
+		self.ARM_ACCEL = 2.0 # rad/s/s
 		self.ARM_DELTA_V = self.ARM_ACCEL * self.TIMER_PERIOD
+		self.BASE_SENSOR_OFFSET = 0.155
 		
 		# range constants
 		self.MAX_DISTANCE = 1.0 # meters
 		#self.SEGMENTS = self.get_parameter('teensy/segments').get_parameter_value().double_array_value
-		self.SEGMENTS = []
+		self.SEGMENTS = [[2.0,-1.6,2.0,-1.8], [2.0,-1.8,2.1,-1.8], [2.1,-1.8,2.1,-1.6], [2.1,-1.6,2.0,-1.6]]
 
 		# set up power monitor
 		self.battery_broadcaster = self.create_publisher(BatteryState, 'arduino/battery', 10)
@@ -218,7 +218,7 @@ class Teensy_Sim(Node):
 		return vel
 
 	def detect_range(self):
-		distance = self.MAX_DISTANCE
+		distance = 1.05 * self.MAX_DISTANCE
 		if self.SEGMENTS == []:
 			return distance
 		x = self.x + self.BASE_SENSOR_OFFSET * math.cos(self.theta)
@@ -247,7 +247,7 @@ def main(args=None):
 		simulator = Teensy_Sim()
 
 		# print('Starting Teensy simulation node')
-		get_logger().info('Starting Teensy simulation node')
+		simulator.get_logger().info('Starting Teensy simulation node')
 
 		rclpy.spin(simulator)
 	
